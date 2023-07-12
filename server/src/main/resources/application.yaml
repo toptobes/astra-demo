@@ -1,0 +1,17 @@
+astra:
+  api:
+    application-token: ${ASTRA_DEMO_TOKEN}
+    database-id: ${ASTRA_DEMO_DB_ID}
+    database-region: us-east1
+    cross-region-failback: off
+    grpc:
+      enabled: true
+  cql:
+    enabled: true
+    download-scb:
+      enabled: true
+    driver-config:
+      basic:
+        session-keyspace: ${ASTRA_DEMO_KEYSPACE}
+server:
+  port: 8081
