@@ -7,6 +7,7 @@ import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.data.CqlVector;
 import org.jetbrains.annotations.Contract;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 @Service
+@DependsOn("indexingTableInitializer")
 public class TextRepository {
     private final CqlSession session;
     private PreparedStatement insertSentence;
