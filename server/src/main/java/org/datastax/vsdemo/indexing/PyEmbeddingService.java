@@ -1,6 +1,7 @@
 package org.datastax.vsdemo.indexing;
 
 import com.datastax.oss.driver.api.core.data.CqlVector;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,14 @@ import static org.datastax.vsdemo.indexing.VectorUtils.listToCqlVector;
 public class PyEmbeddingService {
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${embedding-service.url}")
+    private String embedUrl;
+
     @Async
     @SuppressWarnings({"rawtypes", "DataFlowIssue", "unchecked"})
     public CompletableFuture<List<CqlVector<Float>>> embed(List<String> texts) {
         ResponseEntity<List> responseEntity = restTemplate.postForEntity(
-            "http://localhost:5000/embed",
+            embedUrl,
             new EmbedRequest(texts),
             List.class
         );

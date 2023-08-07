@@ -20,11 +20,11 @@ public class IndexingTableInitializer {
     @PostConstruct
     public void initialize() {
         this.session.execute("""
-            CREATE TABLE IF NOT EXISTS %s.indexing (user_id text, text_id uuid, embedding vector<float, 384>, text text, url text, PRIMARY KEY (user_id, text_id))
+            CREATE TABLE IF NOT EXISTS %s.indexing (user_id text, text_id uuid, embedding_e5 vector<float, 384>, text text, url text, PRIMARY KEY (user_id, text_id))
         """.formatted(keyspace));
 
         this.session.execute("""
-            CREATE CUSTOM INDEX IF NOT EXISTS ann_index ON %s.indexing (embedding) USING 'StorageAttachedIndex'
+            CREATE CUSTOM INDEX IF NOT EXISTS ann_index ON %s.indexing (embedding_e5) USING 'StorageAttachedIndex'
         """.formatted(keyspace));
     }
 }

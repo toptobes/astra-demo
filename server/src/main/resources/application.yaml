@@ -15,3 +15,6 @@ astra:
         session-keyspace: ${ASTRA_DEMO_KEYSPACE}
 server:
   port: 8081
+
+embedding-service:
+  url: http://localhost:5000/embed

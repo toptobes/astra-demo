@@ -6,7 +6,7 @@ import { stopMainLoop } from "../columns.ts";
 let stompClient: Stomp.Client = null as any;
 
 export function setupStomp() {
-  const socket = new SockJS('http://localhost:8081/ws');
+  const socket = new SockJS(import.meta.env.VITE_BACKEND_URL + 'ws');
   stompClient = Stomp.over(socket);
 
   // @ts-ignore
@@ -41,7 +41,7 @@ export function onSimilarityResult(cb: (results: SimilarityResult[]) => void) {
   queryListeners.push(cb)
 }
 
-const CHARS_PER_CHUNK = 12500;
+const CHARS_PER_CHUNK = parseInt(import.meta.env.CHARS_PER_CHUNK!);
 
 function chunk(batches: IndexRequest[]): IndexRequest[][] {
   let chunk: IndexRequest[] = [];

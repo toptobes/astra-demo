@@ -35,6 +35,8 @@ function newCard(text: string, similarity: number, url?: string) {
 
   url && ($card.onclick = () => window.open(`https://${url}`, '_blank'))
 
+  $card.title = 'Cosine similarity: ' + similarity;
+
   $card.appendChild($text);
   return $card;
 }

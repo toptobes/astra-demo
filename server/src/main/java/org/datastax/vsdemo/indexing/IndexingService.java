@@ -29,7 +29,7 @@ public class IndexingService {
         var denoised = removeNoise(request);
 
         var texts = denoised.stream()
-            .map(IndexRequest::text)
+            .map(r -> "passage: " + r.text())
             .toList();
 
         embedder.embed(texts).thenAccept(embeddings -> {
@@ -47,7 +47,7 @@ public class IndexingService {
     }
 
     public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
-        var embeddedQueryFuture = embedder.embed(query);
+        var embeddedQueryFuture = embedder.embed("query: " + query);
 
         return embeddedQueryFuture.thenCompose(embeddedQuery -> (
             repository
@@ -65,8 +65,8 @@ public class IndexingService {
             var url = row.getString("url");
             var text = row.getString("text");
 
-            var embedding = row.get("embedding", CqlVector.class);
-            var similarity = testSimilarity(embedding, embeddedQuery);
+            var embeddingE5 = row.get("embedding_e5", CqlVector.class);
+            var similarity = testSimilarity(embeddingE5, embeddedQuery);
 
             entities.add(new SimilarityResult(text, url, similarity));
         });
