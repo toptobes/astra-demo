@@ -6,8 +6,8 @@ from typing import List
 
 app = Flask(__name__)
 
-tokenizer = AutoTokenizer.from_pretrained("intfloat/multilingual-e5-small")
-model = AutoModel.from_pretrained("intfloat/multilingual-e5-small")
+tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-small-v2")
+model = AutoModel.from_pretrained("intfloat/e5-small-v2")
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
     last_hidden_sum = last_hidden_states.masked_fill(
@@ -31,6 +31,7 @@ def embed():
     texts = data['texts']
 
     embeddings_list = [get_embedding(text) for text in texts]
+
     return jsonify(embeddings_list)
 
 if __name__ == '__main__':

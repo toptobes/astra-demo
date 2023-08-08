@@ -69,8 +69,8 @@ public class IndexingService {
             var url = row.getString("url");
             var text = row.getString("text");
 
-            var embeddingE5 = row.get("embedding_e5", CqlVector.class);
-            var similarity = testSimilarity(embeddingE5, embeddedQuery);
+            var embeddingE5SmallV2 = row.get("embedding_e5_small_v2", CqlVector.class);
+            var similarity = testSimilarity(embeddingE5SmallV2, embeddedQuery);
 
             entities.add(new SimilarityResult(text, url, similarity));
         });
