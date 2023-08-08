@@ -30,17 +30,17 @@ public class TextRepository {
     @PostConstruct
     public void initializeStatements() {
         insertSentence = session.prepare("""
-            INSERT INTO %s.indexing (user_id, text_id, embedding_e5_small_v2, text, url) VALUES(?, ?, ?, ?, ?);
+            INSERT INTO %s.indexing (user_id, text_id, embedding, text, url) VALUES(?, ?, ?, ?, ?);
         """.formatted(keyspace));
 
         similarSentences = session.prepare("""
-            SELECT * FROM %s.indexing WHERE user_id = ? ORDER BY embedding_e5_small_v2 ANN OF ? LIMIT ?;
+            SELECT * FROM %s.indexing WHERE user_id = ? ORDER BY embedding ANN OF ? LIMIT ?;
         """.formatted(keyspace));
     }
 
     public void saveAll(List<TextEntity> entities) {
         entities.forEach(entity -> {
-            var boundInsertion = insertSentence.bind(entity.userID(), entity.textID(), entity.embeddingE5SmallV2(), entity.text(), entity.url());
+            var boundInsertion = insertSentence.bind(entity.userID(), entity.textID(), entity.embedding(), entity.text(), entity.url());
             session.executeAsync(boundInsertion);
         });
     }

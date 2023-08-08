@@ -17,15 +17,18 @@ import static org.datastax.vsdemo.indexing.VectorUtils.listToCqlVector;
 public class PyEmbeddingService {
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${embedding-service.url}")
+    @Value("${astra-demo.embedding-service.url}")
     private String embedUrl;
+
+    @Value("${astra-demo.embedding-service.model}")
+    private String model;
 
     @Async
     @SuppressWarnings({"rawtypes", "DataFlowIssue", "unchecked"})
     public CompletableFuture<List<CqlVector<Float>>> embed(List<String> texts, Type type) {
         ResponseEntity<List> responseEntity = restTemplate.postForEntity(
             embedUrl,
-            new EmbedRequest(texts.stream().map(text -> type.name().toLowerCase() + ": " + text).toList()),
+            new EmbedRequest(texts.stream().map(text -> type.name().toLowerCase() + ": " + text).toList(), model),
             List.class
         );
 
@@ -46,7 +49,7 @@ public class PyEmbeddingService {
         return embed(List.of(text), type).thenApply(list -> list.get(0));
     }
 
-    private record EmbedRequest(List<String> texts) {}
+    private record EmbedRequest(List<String> texts, String model) {}
 
     public enum Type {
         QUERY, PASSAGE

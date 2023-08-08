@@ -13,8 +13,8 @@ public class IndexingTableInitializer {
     @Value("${astra.cql.driver-config.basic.session-keyspace}")
     private String keyspace;
 
-    @Value("${embedding-service.dim}")
-    private String dims;
+    @Value("${astra-demo.embedding-service.dims}")
+    private int dims;
 
     public IndexingTableInitializer(AstraClient astra) {
         this.session = astra.cqlSession();
@@ -30,7 +30,7 @@ public class IndexingTableInitializer {
             CREATE TABLE IF NOT EXISTS %s.indexing (
                 user_id text,
                 text_id uuid,
-                embedding_e5_small_v2 vector<float, %s>,
+                embedding vector<float, %d>,
                 text text,
                 url text,
                 PRIMARY KEY (user_id, text_id)
@@ -38,7 +38,7 @@ public class IndexingTableInitializer {
         """.formatted(keyspace, dims));
 
         this.session.execute("""
-            CREATE CUSTOM INDEX IF NOT EXISTS e5_small_v2_index ON %s.indexing (embedding_e5_small_v2) USING 'StorageAttachedIndex'
+            CREATE CUSTOM INDEX IF NOT EXISTS ann_index ON %s.indexing (embedding) USING 'StorageAttachedIndex'
         """.formatted(keyspace));
     }
 }

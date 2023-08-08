@@ -21,7 +21,6 @@ public class VectorUtils {
         }
 
         double similarity = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-        System.out.println(Math.max(similarity, 0));
         return Math.max(similarity, 0);
     }
 

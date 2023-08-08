@@ -47,11 +47,7 @@ public class IndexingService {
     }
 
     public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
-        System.out.println("Querying for " + query);
-
         var embeddedQueryFuture = embedder.embed(query, PyEmbeddingService.Type.QUERY);
-
-        System.out.println("Embedded query " + query);
 
         return embeddedQueryFuture.thenCompose(embeddedQuery -> (
             repository
@@ -69,8 +65,8 @@ public class IndexingService {
             var url = row.getString("url");
             var text = row.getString("text");
 
-            var embeddingE5SmallV2 = row.get("embedding_e5_small_v2", CqlVector.class);
-            var similarity = testSimilarity(embeddingE5SmallV2, embeddedQuery);
+            var embedding = row.get("embedding", CqlVector.class);
+            var similarity = testSimilarity(embedding, embeddedQuery);
 
             entities.add(new SimilarityResult(text, url, similarity));
         });

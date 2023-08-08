@@ -16,7 +16,8 @@ astra:
 server:
   port: 8081
 
-embedding-service:
-  url: http://localhost:5000/embed
-  dim: 384
-#  dim: 1024
+astra-demo:
+  embedding-service:
+    url: ${ASTRA_DEMO_EMBEDDING_SERVICE_URL:http://localhost:5000/embed}
+    model: ${ASTRA_DEMO_EMBEDDING_SERVICE_MODEL:base_v2}
+    dims: ${ASTRA_DEMO_EMBEDDING_SERVICE_DIMS:768}
