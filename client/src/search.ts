@@ -42,7 +42,7 @@ function newCard(text: string, similarity: number, url?: string) {
 }
 
 function similarity2color(similarity: number): string {
-  return `hsla(${(rescale(similarity, [0.6, 0.8], [0, 1]) ** .8) * 120}, 100%, 40%, .6)`;
+  return `hsla(${(rescale(similarity, [0.7, 0.8], [0, 1]) ** 1.2) * 120}, 100%, 40%, .6)`;
 }
 
 function rescale(input: number, inputRange: [number, number], outputRange: [number, number]) {
