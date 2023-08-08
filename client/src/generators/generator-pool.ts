@@ -13,9 +13,9 @@ declare module '../settings.ts' {
   }
 }
 
-registerSetting('buffer-min-size', 'BUF_MIN_SIZ', 8, ...numInRange(1, 500));
+registerSetting('buffer-min-size', 'BUF_MIN_SIZ', 40, ...numInRange(1, 500));
 
-registerSetting('buffer-add-size', 'BUF_ADD_SIZ', 16, ...numInRange(1, 500));
+registerSetting('buffer-add-size', 'BUF_ADD_SIZ', 40, ...numInRange(1, 500));
 
 registerSetting('index-by', 'INDEXING_BY', 'page', (value) => {
   return (value !== 'sentence' && value !== 'page')
