@@ -11,7 +11,7 @@ declare module './settings.ts' {
 }
 
 export function setupSearch() {
-  registerSetting('limit-queries', 'LIM_QUERIES', 8, ...numInRange(0, 128));
+  registerSetting('limit-queries', 'LIM_QUERIES', 12, ...numInRange(0, 128));
 
   $search.onkeyup = (e: KeyboardEvent) => {
     (e.key === 'Enter') && similarityRequest({ query: $search.value, limit: SETTINGS['limit-queries'] });

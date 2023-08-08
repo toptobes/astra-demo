@@ -29,10 +29,10 @@ public class IndexingService {
         var denoised = removeNoise(request);
 
         var texts = denoised.stream()
-            .map(r -> "passage: " + r.text())
+            .map(IndexRequest::text)
             .toList();
 
-        embedder.embed(texts).thenAccept(embeddings -> {
+        embedder.embed(texts, PyEmbeddingService.Type.PASSAGE).thenAccept(embeddings -> {
             var entities = IntStream.range(0, denoised.size())
                 .mapToObj(i -> (
                     Pair.of(embeddings.get(i), denoised.get(i))
@@ -47,7 +47,11 @@ public class IndexingService {
     }
 
     public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
-        var embeddedQueryFuture = embedder.embed("query: " + query);
+        System.out.println("Querying for " + query);
+
+        var embeddedQueryFuture = embedder.embed(query, PyEmbeddingService.Type.QUERY);
+
+        System.out.println("Embedded query " + query);
 
         return embeddedQueryFuture.thenCompose(embeddedQuery -> (
             repository

@@ -18,3 +18,5 @@ server:
 
 embedding-service:
   url: http://localhost:5000/embed
+  dim: 384
+#  dim: 1024

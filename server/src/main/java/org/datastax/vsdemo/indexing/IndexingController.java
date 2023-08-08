@@ -38,6 +38,7 @@ public class IndexingController {
                 if (error != null) {
                     error.printStackTrace();
                 } else {
+                    System.out.println("Sending query result to " + userID);
                     simp.convertAndSend("/topic/query-result", result);
                 }
             });

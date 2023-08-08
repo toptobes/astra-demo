@@ -22,10 +22,10 @@ public class PyEmbeddingService {
 
     @Async
     @SuppressWarnings({"rawtypes", "DataFlowIssue", "unchecked"})
-    public CompletableFuture<List<CqlVector<Float>>> embed(List<String> texts) {
+    public CompletableFuture<List<CqlVector<Float>>> embed(List<String> texts, Type type) {
         ResponseEntity<List> responseEntity = restTemplate.postForEntity(
             embedUrl,
-            new EmbedRequest(texts),
+            new EmbedRequest(texts.stream().map(text -> type.name().toLowerCase() + ": " + text).toList()),
             List.class
         );
 
@@ -42,9 +42,13 @@ public class PyEmbeddingService {
     }
 
     @Async
-    public CompletableFuture<CqlVector<Float>> embed(String text) {
-        return embed(List.of(text)).thenApply(list -> list.get(0));
+    public CompletableFuture<CqlVector<Float>> embed(String text, Type type) {
+        return embed(List.of(text), type).thenApply(list -> list.get(0));
     }
 
     private record EmbedRequest(List<String> texts) {}
+
+    public enum Type {
+        QUERY, PASSAGE
+    }
 }
