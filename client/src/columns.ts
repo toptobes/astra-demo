@@ -144,4 +144,3 @@ function isGeneratorStrategy(type: string): type is keyof typeof GENERATOR_STRAT
   // @ts-ignore
   return GENERATOR_STRATEGIES[type] !== undefined;
 }
-

@@ -3,12 +3,12 @@ import { ColumnTextGenerationStrategy, toTextBuffer } from "./generator-strategi
 import { GeneratorOutput } from "./generator-pool.ts";
 
 export class WikipediaGeneratorStrategy implements ColumnTextGenerationStrategy {
-  readonly #API_URL = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&grnlimit=`;
-  readonly #EX_LIMIT = 20;
+  static #API_URL = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&grnlimit=';
+  static readonly #EX_LIMIT = 20;
 
   async fetchPage(limit: number): Promise<any[]> {
     try {
-      const response = await fetch(this.#API_URL + limit);
+      const response = await fetch(WikipediaGeneratorStrategy.#API_URL + limit);
       const body = await response.json();
 
       return Object.values(body.query.pages);
@@ -23,7 +23,7 @@ export class WikipediaGeneratorStrategy implements ColumnTextGenerationStrategy 
     let completed = 0;
 
     while (completed < SETTINGS['buffer-add-size']) {
-      const limit = Math.min(this.#EX_LIMIT, SETTINGS['buffer-add-size'] - completed);
+      const limit = Math.min(WikipediaGeneratorStrategy.#EX_LIMIT, SETTINGS['buffer-add-size'] - completed);
       completed += limit;
 
       const pages = this.fetchPage(limit);

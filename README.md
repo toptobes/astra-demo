@@ -29,7 +29,7 @@ To run everything separately, you can do (each from the root dir):
 - `python ./server/embedding-microservice/microservice.py`
 - `cd ./server; ./gradlew bootRun`
 
-or alternatively, just run the `run.sh` file @ the root of the directory.
+or alternatively, just run the `run.sh` file @ the root of the directory (`chmod +x run.sh` if necessary).
 
 ## Optional environment variables:
 
