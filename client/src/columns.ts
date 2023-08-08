@@ -24,7 +24,7 @@ function setupSettings() {
 
   registerSetting('parse-speed', 'PARSE_SPEED', 25, ...numInRange(0, 250));
 
-  registerSetting('text-gen-fn', 'TEXT_GEN_FN', 'wikipedia', (value) => {
+  registerSetting('text-gen-fn', 'TEXT_GEN_FN', 'quickipedia', (value) => {
     return (!isGeneratorStrategy(value))
       ? errored(`invalid generator (${Object.keys(GENERATOR_STRATEGIES)})`)
       : success(value);

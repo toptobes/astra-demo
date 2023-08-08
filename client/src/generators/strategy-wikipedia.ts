@@ -20,10 +20,12 @@ export class WikipediaGeneratorStrategy implements ColumnTextGenerationStrategy 
 
   async fetchPages(): Promise<any[]> {
     const results: Promise<any>[] = [];
-    let remaining = 0;
+    let completed = 0;
 
-    while (remaining < SETTINGS['buffer-add-size']) {
-      const limit = Math.min(this.#EX_LIMIT, remaining += this.#EX_LIMIT);
+    while (completed < SETTINGS['buffer-add-size']) {
+      const limit = Math.min(this.#EX_LIMIT, SETTINGS['buffer-add-size'] - completed);
+      completed += limit;
+
       const pages = this.fetchPage(limit);
       results.push(pages);
     }

@@ -19,8 +19,8 @@ export function toTextBuffer(toIndex: string, url?: string, toDisplay: string = 
 
   const text2index =
     (SETTINGS['index-by'] === 'sentence' && Object.is(toIndex, toDisplay))
-      ? sentences :
-      (SETTINGS['index-by'] === 'sentence')
+        ? sentences :
+    (SETTINGS['index-by'] === 'sentence')
         ? toIndex.split(/(?<=[.!?])/g)
         : [toIndex];
 

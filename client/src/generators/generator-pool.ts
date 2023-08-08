@@ -74,6 +74,10 @@ export class ColTextGenPool {
             if (this.#buffer.length <= SETTINGS['buffer-min-size']) {
               this.#refreshBuffer(strategy);
             }
+
+            if (!this.#buffer.length) {
+              console.log("Needs refresh")
+            }
           }
 
           let isNewSentence = wordIdx === 0;
@@ -103,7 +107,11 @@ export class ColTextGenPool {
 
     this.#isRefreshing = true;
 
+    console.log("Refreshing buffer")
+
     strategy.refreshBuffer().then(newBuffers => {
+      console.log("Refreshed")
+
       const batchesFlattened = newBuffers.flatMap(buffer => buffer[0]);
       indexRequest(batchesFlattened);
 

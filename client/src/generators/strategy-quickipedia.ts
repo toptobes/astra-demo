@@ -7,7 +7,7 @@ export class QuickipediaGeneratorStrategy extends WikipediaGeneratorStrategy {
     return (await this.fetchPages())
       .map(page => [page.title, page.extract, page.pageid])
       .map(([t, e, i]) => {
-        return toTextBuffer(e, `en.wikipedia.com/?curid=${i}`, `Parsed extract '${t}'\n`)
+        return toTextBuffer(e, `en.wikipedia.com/?curid=${i}`, `'${t}'\n`)
       });
   }
 }

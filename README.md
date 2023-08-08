@@ -70,6 +70,8 @@ quickly find its valid values.
 
 - `BUF_MIN_SIZ:` The minimum size of the text buffer before the client generates/requests more text.
 - `BUF_ADD_SIZ:` How many new pieces of texts the generator provides the buffer
+  - In other words, when the number of extracts left in the buffer falls under `BUF_MIN_SIZE`, 
+    it requests `BUF_ADD_SIZ` more extracts from the API
 - `INDEXING_BY:` Determines if each page/extract is split up into sentences or fed to the database directly.
   - Using `sentence` may yield worse results, especially because sentences may be wrongly split up due to 
     acronyms and such.
@@ -80,3 +82,11 @@ quickly find its valid values.
   - `wikipedia:` Fetches extracts from wikipedia to parse, displays it word by word
   - `quickipedia:` Fetches extracts from wikipedia to parse, displays it extract by extract (much faster, less feedback)
   - `lorem:` Generated Lorem-Ipsum-like text
+
+## Basic troubleshooting
+
+Always try refreshing the page first.
+
+If you *consistently* run into an issue on the client-side with unexpectedly disconnecting from the server, and there's
+an error in the console (in the CloseRequest) about the buffer being too large or something, do
+`export VITE_CHARS_PER_CHUNK=...` with a smaller number (-500) each time until it works (it starts @ 8500)

@@ -41,26 +41,27 @@ export function onSimilarityResult(cb: (results: SimilarityResult[]) => void) {
   queryListeners.push(cb)
 }
 
-const CHARS_PER_CHUNK = parseInt(import.meta.env.CHARS_PER_CHUNK!);
+const CHARS_PER_CHUNK = parseInt(import.meta.env.VITE_CHARS_PER_CHUNK!);
 
-function chunk(batches: IndexRequest[]): IndexRequest[][] {
-  let chunk: IndexRequest[] = [];
-  const chunks: IndexRequest[][] = [chunk];
-  let chunkLength = 0;
+function chunk(requests: IndexRequest[]): IndexRequest[][] {
+  let chunks: IndexRequest[][] = [[]];
+  let currentChunkBytes = 0;
 
-  for (const batch of batches) {
-    const sentenceLength = batch.text.length;
-    const newChunkLength = chunkLength + +!!chunk.length + sentenceLength;
+  for (let request of requests) {
+    let requestBytes = getByteSize(JSON.stringify(request));
 
-    if (newChunkLength > CHARS_PER_CHUNK && chunk.length) {
-      chunk = [batch];
-      chunks.push(chunk);
-      chunkLength = sentenceLength;
-    } else {
-      chunk.push(batch);
-      chunkLength = newChunkLength;
+    if (currentChunkBytes + requestBytes > CHARS_PER_CHUNK) {
+      chunks.push([]);
+      currentChunkBytes = 0;
     }
+
+    chunks[chunks.length - 1].push(request);
+    currentChunkBytes += requestBytes;
   }
 
   return chunks;
+}
+
+function getByteSize(str: string): number {
+  return unescape(encodeURIComponent(str)).length;
 }
