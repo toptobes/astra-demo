@@ -1,5 +1,5 @@
 import { numInRange, registerSetting, SETTINGS, subscribeToSettingUpdate } from "./settings.ts";
-import { errored, success } from "./util.ts";
+import { errored, success } from "./utils.ts";
 import { GENERATOR_STRATEGIES } from "./generators/generator-strategies.ts";
 import { ColTextGenPool } from "./generators/generator-pool.ts";
 import { clearInterval } from "stompjs";

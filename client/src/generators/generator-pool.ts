@@ -1,6 +1,6 @@
 import { ColTextGenerator } from "../columns.ts";
 import { numInRange, registerSetting, SETTINGS } from "../settings.ts";
-import { errored, success } from "../util.ts";
+import { errored, success } from "../utils.ts";
 import { ColumnTextGenerationStrategy, GENERATOR_STRATEGIES } from "./generator-strategies.ts";
 import { IndexRequest } from "../stomp/messages.ts";
 import { indexRequest } from "../stomp/stomp.ts";

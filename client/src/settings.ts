@@ -1,4 +1,4 @@
-import { Errorable, errored, success, testDummyWidth } from "./util.ts";
+import { Errorable, errored, success, testDummyWidth } from "./utils.ts";
 
 export function setupSettings() {
   $searchBtn.onclick = () => {

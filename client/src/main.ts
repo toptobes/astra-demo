@@ -1,4 +1,4 @@
-import './style.scss'
+import './styles.scss'
 
 // SockJS patch
 window.global = window;

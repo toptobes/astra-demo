@@ -45,7 +45,7 @@ or alternatively, just run the `run.sh` file @ the root of the directory (`chmod
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_DIMS=...`
   - Sets the dimensionality of the model
   - Default: `384`
-- `export ASTRA_DEMO_ENTRY_TTL=...`
+- `export ASTRA_DEMO_ENTITY_TTL=...`
   - Sets the TTL for every text entity inserted into the db. Use a negative number for no TTL
   - Default: `86400 (24 hrs)`
 
