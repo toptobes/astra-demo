@@ -4,7 +4,7 @@
 
 The frontend contains four main parts:
 
-- The "columns" on the right, which displays the texts are they're parsed and fed to the
+- The "columns" on the right, which display the texts as they're parsed and fed to the
   backend to be embedded and indexed
 - The search bar, where you can query anything, and it'll return the closest matching sentences/
   extracts (depending on your settings)
