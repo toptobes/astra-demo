@@ -1,6 +1,7 @@
 import os
 from time import time
 
+import torch
 from flask import Flask, request, jsonify
 from transformers import AutoTokenizer, AutoModel
 from torch import Tensor
@@ -9,12 +10,16 @@ from typing import List
 
 app = Flask(__name__)
 
-tokenizers = {
-    'base_v2': AutoTokenizer.from_pretrained("intfloat/e5-base-v2"),
-}
+device = os.getenv("ASTRA_DEMO_EMBEDDING_SERVICE_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device(device)
+print(f"Using device: {device}")
 
 models = {
-    'base_v2': AutoModel.from_pretrained("intfloat/e5-base-v2"),
+    'base_v2': AutoModel.from_pretrained("intfloat/e5-base-v2").to(device),
+}
+
+tokenizers = {
+    'base_v2': AutoTokenizer.from_pretrained("intfloat/e5-base-v2"),
 }
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
@@ -28,10 +33,12 @@ def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
 
 def get_embedding(text: str, model: str) -> List[float]:
     inputs = tokenizers[model](text, return_tensors="pt", max_length=512, truncation=True)
+    inputs = { key: tensor.to(device) for key, tensor in inputs.items() }
+
     outputs = models[model](**inputs)
 
     embeddings = average_pool(outputs.last_hidden_state, inputs['attention_mask'])
-    return f.normalize(embeddings, p=2, dim=1).tolist()[0]
+    return f.normalize(embeddings, p=2, dim=1).cpu().tolist()[0]
 
 @app.route('/embed', methods=['POST'])
 def embed():
@@ -45,15 +52,12 @@ def embed():
     return jsonify(embeddings_list)
 
 if __name__ == '__main__':
-    app_port = os.getenv('ASTRA_DEMO_EMBEDDING_SERVICE_PORT')
+    app_port = os.getenv('ASTRA_DEMO_EMBEDDING_SERVICE_PORT', "5000")
 
-    if app_port is None:
+    try:
+        app_port = int(app_port)
+    except ValueError:
+        print("Environment variable MY_ENV_VAR is not a valid integer")
         app_port = 5000
-    else:
-        try:
-            app_port = int(app_port)
-        except ValueError:
-            print("Environment variable MY_ENV_VAR is not a valid integer")
-            app_port = 5000  # default to 5000 if the env var is not a valid integer
 
     app.run(port=app_port)

@@ -6,6 +6,9 @@ especially if you're using a lower-end computer. You can try switching out the m
    current embedding microservice. It runs ~2x faster than the default `e5-base-v2` used
  - More info on the embedding service further down.
 
+If you're using the GPU (CUDA), you may experience the first few embedding taking up to 5-6 seconds, but after that
+it's much faster than the CPU equivalent. 
+
 ## The Frontend
 
 ![img_1.png](./assets/site.png)
@@ -53,6 +56,9 @@ or alternatively, just run the `run.sh` file @ the root of the directory (`chmod
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_DIMS=...`
   - Sets the dimensionality of the model
   - Default: `384`
+- `export ASTRA_DEMO_EMBEDDING_SERVICE_DEVICE=...`
+  - Explicitly sets the device used for embedding
+  - Defaults to `"cuda" if torch.cuda.is_available() else "cpu"` if not set
 - `export ASTRA_DEMO_ENTITY_TTL=...`
   - Sets the TTL for every text entity inserted into the db. Use a negative number for no TTL
   - Default: `86400 (24 hrs)`
