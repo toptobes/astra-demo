@@ -1,3 +1,11 @@
+## Disclaimer
+
+There may some delay between what you see being parsed due to the speed of the embedding service,
+especially if you're using a lower-end computer. You can try switching out the model with a faster one.
+ - `https://huggingface.co/intfloat/e5-small-v2` is quite good and would be simple to plug into the
+   current embedding microservice. It runs ~2x faster than the default `e5-base-v2` used
+ - More info on the embedding service further down.
+
 ## The Frontend
 
 ![img_1.png](./assets/site.png)
@@ -64,6 +72,13 @@ record EmbedRequest(List<String> texts, String model)
 
 and the service must return a `List<List<Double>>` in return.
 
+If you change the dimensions of the embedding, you'll have to manually drop your indexing table from the CQL
+console for it to create the new table with the differing dimensionality.
+
+```cql
+DROP TABLE [keyspace].indexing;
+```
+
 ## Client-side options
 
 ![img.png](./assets/settings.png)
@@ -90,16 +105,25 @@ quickly find its valid values.
 
 Always try refreshing the page first (The site doesn't auto-reconnect to the server).
 
-There may some delay between what you see being parsed due to the speed of the embedding service,
-especially if you have a lower end computer. You can try switching out the model with a faster one.
- - `https://huggingface.co/intfloat/e5-small-v2` is quite good and would be simple to plug into the
-   current embedding microservice. It runs ~2x faster than the default `e5-base-v2` used
-
 If you *consistently* run into an issue on the client-side with unexpectedly disconnecting from the server, and there's
 an error in the console (in the CloseRequest) about the buffer being too large or something, do
 `export VITE_CHARS_PER_CHUNK=...` with a smaller number (-500) each time until it works (it starts @ 8500)
 
 There's also a small chance you might get rate-limited by the wikipedia API, but I highly doubt you'll run into that.
+
+If the Spring server is crashing on launch with the error `InvalidQueryException: Table <keyspace>.indexing doesn't exist`,
+try running the following command (in the CQL console) manually:
+
+```cql
+CREATE TABLE IF NOT EXISTS [keyspace].indexing (
+    user_id text,
+    text_id uuid,
+    embedding vector<float, [dimensionality]>,
+    text text,
+    url text,
+    PRIMARY KEY (user_id, text_id)
+);
+```
 
 # Etc.
 
