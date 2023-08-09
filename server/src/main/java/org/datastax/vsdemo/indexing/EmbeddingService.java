@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static org.datastax.vsdemo.indexing.VectorUtils.listToCqlVector;
 
 @Service
-public class PyEmbeddingService {
+public class EmbeddingService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${astra-demo.embedding-service.url}")

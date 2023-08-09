@@ -23,10 +23,6 @@ public class IndexingTableInitializer {
     @PostConstruct
     public void initialize() {
         this.session.execute("""
-            DROP TABLE %s.indexing
-        """.formatted(keyspace));
-
-        this.session.execute("""
             CREATE TABLE IF NOT EXISTS %s.indexing (
                 user_id text,
                 text_id uuid,

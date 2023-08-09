@@ -23,15 +23,22 @@ public class TextRepository {
     @Value("${astra.cql.driver-config.basic.session-keyspace}")
     private String keyspace;
 
+    @Value("${astra-demo.entry-ttl}")
+    private int ttl;
+
     public TextRepository(AstraClient astra) {
         this.session = astra.cqlSession();
     }
 
     @PostConstruct
     public void initializeStatements() {
+        var ttl = (this.ttl >= 0)
+            ? "USING TTL " + this.ttl
+            : "";
+
         insertSentence = session.prepare("""
-            INSERT INTO %s.indexing (user_id, text_id, embedding, text, url) VALUES(?, ?, ?, ?, ?);
-        """.formatted(keyspace));
+            INSERT INTO %s.indexing (user_id, text_id, embedding, text, url) VALUES(?, ?, ?, ?, ?) %s;
+        """.formatted(keyspace, ttl));
 
         similarSentences = session.prepare("""
             SELECT * FROM %s.indexing WHERE user_id = ? ORDER BY embedding ANN OF ? LIMIT ?;

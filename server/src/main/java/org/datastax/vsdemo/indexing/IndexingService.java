@@ -17,10 +17,10 @@ import static org.datastax.vsdemo.indexing.VectorUtils.testSimilarity;
 
 @Service
 public class IndexingService {
-    private final PyEmbeddingService embedder;
+    private final EmbeddingService embedder;
     private final TextRepository repository;
 
-    public IndexingService(TextRepository repository, PyEmbeddingService embedder) {
+    public IndexingService(TextRepository repository, EmbeddingService embedder) {
         this.repository = repository;
         this.embedder = embedder;
     }
@@ -32,7 +32,7 @@ public class IndexingService {
             .map(IndexRequest::text)
             .toList();
 
-        embedder.embed(texts, PyEmbeddingService.Type.PASSAGE).thenAccept(embeddings -> {
+        embedder.embed(texts, EmbeddingService.Type.PASSAGE).thenAccept(embeddings -> {
             var entities = IntStream.range(0, denoised.size())
                 .mapToObj(i -> (
                     Pair.of(embeddings.get(i), denoised.get(i))
@@ -47,7 +47,7 @@ public class IndexingService {
     }
 
     public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
-        var embeddedQueryFuture = embedder.embed(query, PyEmbeddingService.Type.QUERY);
+        var embeddedQueryFuture = embedder.embed(query, EmbeddingService.Type.QUERY);
 
         return embeddedQueryFuture.thenCompose(embeddedQuery -> (
             repository
