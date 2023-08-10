@@ -117,20 +117,6 @@ an error in the console (in the CloseRequest) about the buffer being too large o
 
 There's also a small chance you might get rate-limited by the wikipedia API, but I highly doubt you'll run into that.
 
-If the Spring server is crashing on launch with the error `InvalidQueryException: Table <keyspace>.indexing doesn't exist`,
-try running the following command (in the CQL console) manually:
-
-```cql
-CREATE TABLE IF NOT EXISTS [keyspace].indexing (
-    user_id text,
-    text_id uuid,
-    embedding vector<float, [dimensionality]>,
-    text text,
-    url text,
-    PRIMARY KEY (user_id, text_id)
-);
-```
-
 # Etc.
 
 This hasn't been tested with multiple connections, but it should theoretically work if multiple people were to
