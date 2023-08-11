@@ -62,6 +62,9 @@ or alternatively, just run the `run.sh` file @ the root of the directory (`chmod
 - `export ASTRA_DEMO_ENTITY_TTL=...`
   - Sets the TTL for every text entity inserted into the db. Use a negative number for no TTL
   - Default: `86400 (24 hrs)`
+- `export ASTRA_DEMO_SHARE_TEXTS=...`
+  - Sets whether all connections use the same shared set of texts, or if they use only what they scraped themselves
+  - Default: `false`
 
 ## Custom embedding
 

@@ -4,6 +4,7 @@ import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
 import com.datastax.oss.driver.api.core.data.CqlVector;
 import org.datastax.vsdemo.indexing.messages.IndexRequest;
 import org.datastax.vsdemo.indexing.messages.SimilarityResult;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,9 @@ public class IndexingService {
     private final EmbeddingService embedder;
     private final TextRepository repository;
 
+    @Value("${astra-demo.share-texts}")
+    private boolean shareTexts;
+
     public IndexingService(TextRepository repository, EmbeddingService embedder) {
         this.repository = repository;
         this.embedder = embedder;
@@ -32,13 +36,15 @@ public class IndexingService {
             .map(IndexRequest::text)
             .toList();
 
+        var finalUserID = determineUserID(userID);
+
         embedder.embed(texts, EmbeddingService.Type.PASSAGE).thenAccept(embeddings -> {
             var entities = IntStream.range(0, denoised.size())
                 .mapToObj(i -> (
                     Pair.of(embeddings.get(i), denoised.get(i))
                 ))
                 .map(p -> (
-                    new TextEntity(userID, UUID.randomUUID(), p.getFirst(), p.getSecond().text(), p.getSecond().url())
+                    new TextEntity(finalUserID, UUID.randomUUID(), p.getFirst(), p.getSecond().text(), p.getSecond().url())
                 ))
                 .toList();
 
@@ -48,6 +54,7 @@ public class IndexingService {
 
     public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
         var embeddedQueryFuture = embedder.embed(query, EmbeddingService.Type.QUERY);
+        var finalUserID = determineUserID(userID);
 
         return embeddedQueryFuture.thenCompose(embeddedQuery -> (
             repository
@@ -83,5 +90,9 @@ public class IndexingService {
                 r.text().length() > 10 && !r.text().isBlank()
             ))
             .toList();
+    }
+
+    private String determineUserID(String userID) {
+        return shareTexts ? "shared" : userID;
     }
 }

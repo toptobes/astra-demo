@@ -22,3 +22,4 @@ astra-demo:
     model: ${ASTRA_DEMO_EMBEDDING_SERVICE_MODEL:base_v2}
     dims: ${ASTRA_DEMO_EMBEDDING_SERVICE_DIMS:768}
   entry-ttl: ${ASTRA_DEMO_ENTITY_TTL:86400}
+  share-texts: ${ASTRA_DEMO_SHARE_TEXTS:false}
