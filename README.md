@@ -42,6 +42,11 @@ To run everything separately, you can do (each from the root dir):
 
 or alternatively, just run the `run.sh` file @ the root of the directory (`chmod +x run.sh` if necessary).
 
+You can also do `./run.sh open` to allow Vite and Spring to be accessed from other devices on the network,
+using the host's ip address.
+
+The default port for Vite should be `5173`, and `8081` for Spring.
+
 ## Optional environment variables:
 
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_PORT=...`
@@ -63,8 +68,11 @@ or alternatively, just run the `run.sh` file @ the root of the directory (`chmod
   - Sets the TTL for every text entity inserted into the db. Use a negative number for no TTL
   - Default: `86400 (24 hrs)`
 - `export ASTRA_DEMO_SHARE_TEXTS=...`
-  - Sets whether all connections use the same shared set of texts, or if they use only what they scraped themselves
+  - Sets whether all connections should use the same shared set of texts, or if they use only what they scraped themselves
   - Default: `false`
+- `export VITE_BACKEND_URL=...`
+  - Sets the URL of the Spring backend
+  - Default: `http://localhost:8081/`
 
 ## Custom embedding
 

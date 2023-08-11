@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 plugins {
     java
     id("org.springframework.boot") version "3.1.1"
@@ -26,4 +28,10 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<BootRun>("bootRun") {
+    if (project.hasProperty("openServer")) {
+        args("--server.address=0.0.0.0")
+    }
 }
