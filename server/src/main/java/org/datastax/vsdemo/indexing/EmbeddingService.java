@@ -1,57 +1,56 @@
 package org.datastax.vsdemo.indexing;
 
-import com.datastax.oss.driver.api.core.data.CqlVector;
+import org.datastax.vsdemo.indexing.records.EmbeddedPassage;
+import org.datastax.vsdemo.indexing.records.EmbeddedQuery;
+import org.datastax.vsdemo.indexing.utils.VectorUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import static org.datastax.vsdemo.indexing.VectorUtils.listToCqlVector;
+import static org.datastax.vsdemo.indexing.utils.Prelude.map;
+import static org.datastax.vsdemo.indexing.utils.VectorUtils.listToCqlVector;
 
 @Service
 public class EmbeddingService {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestClient restClient;
 
-    @Value("${astra-demo.embedding-service.url}")
-    private String embedUrl;
+    public EmbeddingService(@Value("${astra-demo.embedding-service.url}") String embedUrl, RestClient.Builder restBuilder) {
+        this.restClient = restBuilder.baseUrl(embedUrl).build();
+    }
 
-    @Value("${astra-demo.embedding-service.model}")
-    private String model;
+    @SuppressWarnings({"DataFlowIssue"})
+    public EmbeddedPassage embedPassages(List<String> texts) {
+        var result = restClient.post()
+            .uri("/embed/passages")
+            .body(new PassageEmbedRequest(texts))
+            .retrieve()
+            .body(PassageEmbedResponse.class);
 
-    @Async
-    @SuppressWarnings({"rawtypes", "DataFlowIssue", "unchecked"})
-    public CompletableFuture<List<CqlVector<Float>>> embed(List<String> texts, Type type) {
-        ResponseEntity<List> responseEntity = restTemplate.postForEntity(
-            embedUrl,
-            new EmbedRequest(texts.stream().map(text -> type.name().toLowerCase() + ": " + text).toList(), model),
-            List.class
+        return new EmbeddedPassage(
+            map(VectorUtils::listToCqlVector, result.dense),
+            map(map(VectorUtils::listToCqlVector), result.multi)
         );
-
-        List<CqlVector<Float>> embeddings = responseEntity.getBody()
-            .stream().map(embedding -> {
-                var floatEmbedding = ((List<Double>) embedding).stream()
-                    .map(Double::floatValue)
-                    .collect(Collectors.toList());
-
-                return listToCqlVector(floatEmbedding);
-            }).toList();
-
-        return CompletableFuture.completedFuture(embeddings);
     }
 
-    @Async
-    public CompletableFuture<CqlVector<Float>> embed(String text, Type type) {
-        return embed(List.of(text), type).thenApply(list -> list.get(0));
+    @SuppressWarnings("DataFlowIssue")
+    public EmbeddedQuery embedQuery(String text) {
+        var result = restClient.post()
+            .uri("/embed/query")
+            .body(new QueryEmbedRequest(text))
+            .retrieve()
+            .body(QueryEmbedResponse.class);
+
+        return new EmbeddedQuery(
+            listToCqlVector(result.dense),
+            map(VectorUtils::listToCqlVector, result.multi)
+        );
     }
 
-    private record EmbedRequest(List<String> texts, String model) {}
+    private record PassageEmbedRequest(List<String> texts) {}
+    private record QueryEmbedRequest(String text) {}
 
-    public enum Type {
-        QUERY, PASSAGE
-    }
+    private record PassageEmbedResponse(List<List<Double>> dense, List<List<List<Double>>> multi) {}
+    private record QueryEmbedResponse(List<Double> dense, List<List<Double>> multi) {}
 }

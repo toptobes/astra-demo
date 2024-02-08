@@ -1,7 +1,8 @@
 import { onSimilarityResult, similarityRequest } from "./stomp/stomp.ts";
 import { numInRange, registerSetting, SETTINGS } from "./settings.ts";
 
-const $wrapper = document.querySelector('.cards-container')! as HTMLDivElement;
+const $wrapperDense = document.querySelector('.cards-container-dense')! as HTMLDivElement;
+const $wrapperMulti = document.querySelector('.cards-container-multi')! as HTMLDivElement;
 const $search = document.querySelector('#search-bar')! as HTMLInputElement;
 
 declare module './settings.ts' {
@@ -18,10 +19,15 @@ export function setupSearch() {
   };
 
   onSimilarityResult((results) => {
-    const $cards = results.map((result) => {
-      return newCard(result.text, result.similarity, result.url);
+    const $cardsDense = results.dense.map((result) => {
+      return newCard(result.text, 0.0, result.url);
     });
-    $wrapper.replaceChildren(...$cards);
+    $wrapperDense.replaceChildren('Dense', ...$cardsDense);
+
+    const $cardsMulti = results.multi.map((result) => {
+      return newCard(result.text, 1.0, result.url);
+    });
+    $wrapperMulti.replaceChildren('Multi-vector', ...$cardsMulti);
   });
 }
 

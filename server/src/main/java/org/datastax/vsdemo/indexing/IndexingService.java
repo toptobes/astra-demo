@@ -1,84 +1,53 @@
 package org.datastax.vsdemo.indexing;
 
-import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
-import com.datastax.oss.driver.api.core.data.CqlVector;
 import org.datastax.vsdemo.indexing.messages.IndexRequest;
 import org.datastax.vsdemo.indexing.messages.SimilarityResult;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.util.Pair;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletionStage;
-import java.util.stream.IntStream;
+import java.util.concurrent.CompletableFuture;
 
-import static org.datastax.vsdemo.indexing.VectorUtils.testSimilarity;
+import static org.datastax.vsdemo.indexing.utils.Prelude.map;
 
 @Service
 public class IndexingService {
     private final EmbeddingService embedder;
-    private final TextRepository repository;
+    private final DenseService denseService;
+    private final MultiService multiService;
 
     @Value("${astra-demo.share-texts}")
     private boolean shareTexts;
 
-    public IndexingService(TextRepository repository, EmbeddingService embedder) {
-        this.repository = repository;
+    public IndexingService(DenseService denseService, MultiService multiService, EmbeddingService embedder) {
+        this.denseService = denseService;
+        this.multiService = multiService;
         this.embedder = embedder;
     }
 
+    @Async
     public void indexSentences(String userID, List<IndexRequest> request) {
         var denoised = removeNoise(request);
 
-        var texts = denoised.stream()
-            .map(IndexRequest::text)
-            .toList();
+        var texts = map(IndexRequest::text, denoised);
+        var embeddingResult = embedder.embedPassages(texts);
 
         var finalUserID = determineUserID(userID);
 
-        embedder.embed(texts, EmbeddingService.Type.PASSAGE).thenAccept(embeddings -> {
-            var entities = IntStream.range(0, denoised.size())
-                .mapToObj(i -> (
-                    Pair.of(embeddings.get(i), denoised.get(i))
-                ))
-                .map(p -> (
-                    new TextEntity(finalUserID, UUID.randomUUID(), p.getFirst(), p.getSecond().text(), p.getSecond().url())
-                ))
-                .toList();
-
-            repository.saveAll(entities);
-        });
+        denseService.indexPassages(finalUserID, denoised, embeddingResult);
+        multiService.indexPassages(finalUserID, denoised, embeddingResult);
     }
 
-    public CompletionStage<List<SimilarityResult>> getSimilarSentences(String userID, String query, int limit) {
-        var embeddedQueryFuture = embedder.embed(query, EmbeddingService.Type.QUERY);
+    @Async
+    public CompletableFuture<SimilarityResult> getSimilarSentences(String userID, String query, int limit) {
+        var embeddedQuery = embedder.embedQuery(query);
         var finalUserID = determineUserID(userID);
 
-        return embeddedQueryFuture.thenCompose(embeddedQuery -> (
-            repository
-                .findByUserIDAndANN(userID, embeddedQuery, limit)
-                .thenApply(resultSet -> createSimilarityResults(resultSet, embeddedQuery))
-        ));
-    }
+        var denseResults = denseService.findSimilarSentences(finalUserID, embeddedQuery, limit);
+        var multiResults = multiService.findSimilarSentences(finalUserID, embeddedQuery, limit);
 
-    @SuppressWarnings({"DataFlowIssue", "unchecked"})
-    private List<SimilarityResult> createSimilarityResults(AsyncResultSet resultSet, CqlVector<Float> embeddedQuery) {
-        var rows = resultSet.currentPage();
-        var entities = new ArrayList<SimilarityResult>();
-
-        rows.forEach((row) -> {
-            var url = row.getString("url");
-            var text = row.getString("text");
-
-            var embedding = row.get("embedding", CqlVector.class);
-            var similarity = testSimilarity(embedding, embeddedQuery);
-
-            entities.add(new SimilarityResult(text, url, similarity));
-        });
-
-        return entities;
+        return CompletableFuture.completedFuture(new SimilarityResult(denseResults.join(), multiResults.join()));
     }
 
     private List<IndexRequest> removeNoise(List<IndexRequest> request) {
@@ -87,7 +56,7 @@ public class IndexingService {
                 new IndexRequest(r.text().trim(), r.url())
             ))
             .filter(r -> (
-                r.text().length() > 10 && !r.text().isBlank()
+                r.text().length() >= 8 && !r.text().isBlank()
             ))
             .toList();
     }

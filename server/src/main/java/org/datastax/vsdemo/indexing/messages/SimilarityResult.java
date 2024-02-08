@@ -1,3 +1,7 @@
 package org.datastax.vsdemo.indexing.messages;
 
-public record SimilarityResult(String text, String url, double similarity) {}
+import java.util.List;
+
+public record SimilarityResult(List<Single> dense, List<Single> multi) {
+    public record Single(String text, String url) {}
+}

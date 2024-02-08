@@ -18,7 +18,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <!-- Placeholder for dynamically generated settings -->
       </div>
       <div class="cards-container">
-        <!-- Placeholder for dynamically generated cards -->
+        <div class="cards-container-dense">
+          <!-- Placeholder for dynamically generated cards -->
+        </div>
+        <div class="cards-container-multi">
+          <!-- Placeholder for dynamically generated cards -->
+        </div>
       </div>
     </div>
     <div class="columns-container">

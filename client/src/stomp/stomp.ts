@@ -9,7 +9,7 @@ export function setupStomp() {
   const socket = new SockJS(import.meta.env.VITE_BACKEND_URL + 'ws');
   stompClient = Stomp.over(socket);
 
-  // @ts-ignore
+  // @ts-expect-error It can be null just fine
   stompClient.debug = null
 
   stompClient.connect({}, _ => {
@@ -31,20 +31,20 @@ export function indexRequest(batches: IndexRequest[]): void {
   });
 }
 
-const queryListeners: ((results: SimilarityResult[]) => void)[] = [];
+const queryListeners: ((results: SimilarityResult) => void)[] = [];
 
 export function similarityRequest(msg: SimilarityRequest) {
   stompClient.send('/app/query', {}, JSON.stringify(msg));
 }
 
-export function onSimilarityResult(cb: (results: SimilarityResult[]) => void) {
+export function onSimilarityResult(cb: (results: SimilarityResult) => void) {
   queryListeners.push(cb)
 }
 
 const CHARS_PER_CHUNK = parseInt(import.meta.env.VITE_CHARS_PER_CHUNK!);
 
 function chunk(requests: IndexRequest[]): IndexRequest[][] {
-  let chunks: IndexRequest[][] = [[]];
+  const chunks: IndexRequest[][] = [[]];
   let currentChunkBytes = 0;
 
   for (let request of requests) {
@@ -63,5 +63,5 @@ function chunk(requests: IndexRequest[]): IndexRequest[][] {
 }
 
 function getByteSize(str: string): number {
-  return unescape(encodeURIComponent(str)).length;
+  return decodeURIComponent(encodeURIComponent(str)).length;
 }

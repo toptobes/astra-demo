@@ -20,7 +20,7 @@ cd ./client && npx vite "$VITE_HOST" &
 VITE_PID=$!
 cd ./server/embedding-microservice && python microservice.py &
 PYTHON_PID=$!
-cd ./server && ./gradlew bootRun "$SPRING_ARGS" &
+cd ./server && ./gradlew bootRun $SPRING_ARGS &
 GRADLE_PID=$!
 
 wait -n $VITE_PID $PYTHON_PID $GRADLE_PID

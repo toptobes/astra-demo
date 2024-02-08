@@ -8,6 +8,7 @@ export interface SimilarityRequest {
   limit: number,
 }
 
-export interface SimilarityResult extends IndexRequest {
-  similarity: number,
+export interface SimilarityResult {
+  dense: IndexRequest[],
+  multi: IndexRequest[],
 }
