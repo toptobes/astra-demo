@@ -1,3 +1,11 @@
+## What is this?
+
+It's a demonstation of Astra's realtime indexing capabilities as well as a comparison of the traditional vector search model vs. the ColBERT paradigm on Astra. Text
+is scraped from random wikipedia "articles" (by default), and displayed as its parsed on the right. On the left is a search bar, where you can query anything about
+the parsed pages.
+
+It's *also* an *excellent* workout for your computer :)
+
 ## Disclaimer
 
 There may some delay between what you see being parsed due to the speed of the embedding service,
@@ -35,10 +43,13 @@ Prereqs:
 - A newer version of Python (I used 3.11.7, I think 3.8+ works, but not sure)
 
 From the root directory (will require a few GB or space or so for the models):
-- `pip install -r embeddings/requirement.txt (use venv if you want)`
-- `npm install --prefix client`
-- `mkdir embeddings/checkpoints/ && curl -o colbertv2.0.tar.gz https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz && tar -xzf colbertv2.0.tar.gz -C embeddings/checkpoints/`
-- set the following environment variables:
+```
+pip install -r embeddings/requirement.txt # (use a venv if you want)
+npm install --prefix client
+mkdir embeddings/checkpoints/ && curl -o colbertv2.0.tar.gz https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz && tar -xzf colbertv2.0.tar.gz -C embeddings/checkpoints/
+```
+
+- set the following environment variables OR set the application.yaml file in `server/src/main/resources` (env vars are a bit finnicky):
   - `export ASTRA_DEMO_DB_TOKEN=...`
   - `export ASTRA_DEMO_DB_ID=...`
   - `export ASTRA_DEMO_DB_REGION=...`
@@ -50,9 +61,6 @@ To run everything separately, you can do (each from the root dir):
 - `cd ./server; ./gradlew bootRun`
 
 or alternatively, just run the `run.sh` file @ the root of the directory (`chmod +x run.sh` if necessary) and spam `^C` to stop it.
-
-You can also do `./run.sh open` to allow Vite and Spring to be accessed from other devices on the network,
-using the host's ip address.
 
 The default port for Vite should be `5173`, and `8082` for Spring.
 
