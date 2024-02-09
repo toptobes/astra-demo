@@ -1,15 +1,15 @@
 ## Disclaimer
 
 There may some delay between what you see being parsed due to the speed of the embedding service,
-especially if you're using a lower-end computer. You can try switching out the model with a faster one.
+especially if you're using a lower-end computer. You can try switching out the dense model with a faster one.
  - `https://huggingface.co/intfloat/e5-small-v2` is quite good and would be simple to plug into the
    current embedding microservice. It runs ~2x faster than the default `e5-base-v2` used
- - More info on the embedding service further down.
+ - Just be sure to update `ASTRA_DEMO_EMBEDDING_SERVICE_DIMS` if necessary
 
 If you're using the GPU (CUDA), you may experience the first few embedding taking up to 5-6 seconds, but after that
 it's much faster than the CPU equivalent. 
 
-## The Frontend
+## The Frontend (image slightly outdated)
 
 ![img_1.png](./assets/site.png)
 
@@ -28,8 +28,15 @@ The frontend contains four main parts:
 
 ## Usage
 
-- `pip install -r server/embedding-microservice/requirements.txt`
+Prereqs:
+- Java 21
+- npm or another package manager/runner
+- A newer version of Python (I used 3.11.7, I think 3.8+ works, but not sure)
+
+From the root directory (will require a few GB or space or so for the models):
+- `pip install -r embeddings/requirement.txt (use venv if you want)`
 - `npm install --prefix client`
+- `mkdir embeddings/checkpoints/ && curl -o colbertv2.0.tar.gz https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz && tar -xzf colbertv2.0.tar.gz -C embeddings/checkpoints/`
 - set the following environment variables:
   - `export ASTRA_DEMO_DB_ID=...`
   - `export ASTRA_DEMO_TOKEN=...`
@@ -37,26 +44,27 @@ The frontend contains four main parts:
 
 To run everything separately, you can do (each from the root dir):
 - `cd ./client; npx vite`
-- `python ./server/embedding-microservice/microservice.py`
+- `cd ./embeddings; python serve.py`
 - `cd ./server; ./gradlew bootRun`
 
-or alternatively, just run the `run.sh` file @ the root of the directory (`chmod +x run.sh` if necessary).
+or alternatively, just run the `run.sh` file @ the root of the directory (`chmod +x run.sh` if necessary) and spam `^C` to stop it.
 
 You can also do `./run.sh open` to allow Vite and Spring to be accessed from other devices on the network,
 using the host's ip address.
 
-The default port for Vite should be `5173`, and `8081` for Spring.
+The default port for Vite should be `5173`, and `8082` for Spring.
 
 ## Optional environment variables:
 
+- `export SERVER_PORT=...`
+  - Sets the port for the spring backend
+  - Default: `8082`
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_PORT=...`
   - Sets the port for the default embedding microservice
   - Default: `5000`
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_URL=...`
   - Sets the URL for the embedding microservice (must be updated if `port` is changed)
   - Default: `http://localhost:5000/embed`
-- `export ASTRA_DEMO_EMBEDDING_SERVICE_MODEL=...`
-  - Sets the model to send the embedding microservice
   - Default: `base_v2`
 - `export ASTRA_DEMO_EMBEDDING_SERVICE_DIMS=...`
   - Sets the dimensionality of the model
@@ -72,29 +80,7 @@ The default port for Vite should be `5173`, and `8081` for Spring.
   - Default: `false`
 - `export VITE_BACKEND_URL=...`
   - Sets the URL of the Spring backend
-  - Default: `http://localhost:8081/`
-
-## Custom embedding
-
-The default microservice can be found in the `server/embedding-microservice` directory.
-
-It is here that you can add your own custom models if you so desire, or you can even create
-a whole new custom one; just be sure to update the appropriate env variables.
-
-The request DTO is like so:
-
-```java
-record EmbedRequest(List<String> texts, String model)
-```
-
-and the service must return a `List<List<Double>>` in return.
-
-If you change the dimensions of the embedding, you'll have to manually drop your indexing table from the CQL
-console for it to create the new table with the differing dimensionality.
-
-```cql
-DROP TABLE [keyspace].indexing;
-```
+  - Default: `http://localhost:8082/`
 
 ## Client-side options
 
