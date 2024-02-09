@@ -29,6 +29,7 @@ The frontend contains four main parts:
 ## Usage
 
 Prereqs:
+- A unix system (Windows w/out WSL2 may theoreticallty work, but setting up the environment is a pain; requires cl.exe and header files and stuff on path)
 - Java 21
 - npm or another package manager/runner
 - A newer version of Python (I used 3.11.7, I think 3.8+ works, but not sure)
@@ -38,9 +39,10 @@ From the root directory (will require a few GB or space or so for the models):
 - `npm install --prefix client`
 - `mkdir embeddings/checkpoints/ && curl -o colbertv2.0.tar.gz https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz && tar -xzf colbertv2.0.tar.gz -C embeddings/checkpoints/`
 - set the following environment variables:
+  - `export ASTRA_DEMO_DB_TOKEN=...`
   - `export ASTRA_DEMO_DB_ID=...`
-  - `export ASTRA_DEMO_TOKEN=...`
-  - `export ASTRA_DEMO_KEYSPACE=...`
+  - `export ASTRA_DEMO_DB_REGION=...`
+  - `export ASTRA_DEMO_DB_KEYSPACE=...`
 
 To run everything separately, you can do (each from the root dir):
 - `cd ./client; npx vite`

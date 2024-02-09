@@ -1,8 +1,8 @@
 astra:
   api:
-    application-token: ${ASTRA_DEMO_TOKEN:AstraCS:IAAFgcfxyOKLNeKbYrshlxMT:221f331224eb0e9fef75f1c95644a9ddf251d9904fc900091098a3b7b62ca615}
-    database-id: ${ASTRA_DEMO_DB_ID:273da712-6791-4d6f-97a8-c1198f669817}
-    database-region: ${ASTRA_DEMO_DB_REGION:us-east1}
+    application-token: ${ASTRA_DEMO_DB_TOKEN}
+    database-id: ${ASTRA_DEMO_DB_ID}
+    database-region: ${ASTRA_DEMO_DB_REGION}
     cross-region-failback: off
     grpc:
       enabled: true
@@ -12,7 +12,7 @@ astra:
       enabled: true
     driver-config:
       basic:
-        session-keyspace: demo
+        session-keyspace: ${ASTRA_DEMO_DB_KEYSPACE}
 
 server:
   port: 8082
