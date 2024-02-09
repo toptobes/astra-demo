@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     java
+    application
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
 }
@@ -11,8 +12,15 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
+application {
+    applicationDefaultJvmArgs = listOf("--add-modules=jdk.incubator.vector")
+}
 
 repositories {
     mavenCentral()

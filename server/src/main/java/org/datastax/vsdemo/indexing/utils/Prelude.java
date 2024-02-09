@@ -21,10 +21,6 @@ public class Prelude {
             .toList();
     }
 
-
-//    var similar = uniqueIDsList.stream().map(id -> multiRepository.getByID(userID, id)).toList();
-//        similar.forEach(CompletableFuture::join);
-
     public static <A, B> List<B> mapAsync(Function<A, CompletableFuture<B>> f, List<A> list) {
         return map(CompletableFuture::join, map(f, list));
     }

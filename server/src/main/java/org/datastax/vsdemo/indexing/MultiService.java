@@ -50,12 +50,7 @@ public class MultiService {
             v -> multiRepository.findByUserIDAndANN(userID, v, limit / 2),
             eqs
         ).stream()
-            // if I do `sout(row.getString("text")), it often doesn't even include what should be the top result
-            // which is indicative of where the issue is coming from (that being with the embedding or the ann query)
-            .flatMap(r -> r.map(row -> {
-                System.out.println(row.getString("text").substring(0, 30));
-                return row.getUuid("text_id");
-            }).all().stream())
+            .flatMap(r -> r.map(row -> row.getUuid("text_id")).all().stream())
             .distinct()
             .toList();
 

@@ -39,7 +39,7 @@ function newCard(text: string, similarity: number, url?: string) {
   $card.className = "card";
   $card.style.setProperty('--card-similarity-color', similarity2color(similarity));
 
-  url && ($card.onclick = () => window.open(`https://${url}`, '_blank'))
+  // url && ($card.onclick = () => window.open(`https://${url}`, '_blank'))
 
   $card.title = 'Cosine similarity: ' + similarity;
 

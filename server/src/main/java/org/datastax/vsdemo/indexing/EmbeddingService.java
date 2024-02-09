@@ -1,8 +1,8 @@
 package org.datastax.vsdemo.indexing;
 
+import com.datastax.oss.driver.api.core.data.CqlVector;
 import org.datastax.vsdemo.indexing.records.EmbeddedPassage;
 import org.datastax.vsdemo.indexing.records.EmbeddedQuery;
-import org.datastax.vsdemo.indexing.utils.VectorUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -10,7 +10,6 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 
 import static org.datastax.vsdemo.indexing.utils.Prelude.map;
-import static org.datastax.vsdemo.indexing.utils.VectorUtils.listToCqlVector;
 
 @Service
 public class EmbeddingService {
@@ -29,8 +28,8 @@ public class EmbeddingService {
             .body(PassageEmbedResponse.class);
 
         return new EmbeddedPassage(
-            map(VectorUtils::listToCqlVector, result.dense),
-            map(map(VectorUtils::listToCqlVector), result.multi)
+            map(EmbeddingService::listToCqlVector, result.dense),
+            map(map(EmbeddingService::listToCqlVector), result.multi)
         );
     }
 
@@ -44,13 +43,18 @@ public class EmbeddingService {
 
         return new EmbeddedQuery(
             listToCqlVector(result.dense),
-            map(VectorUtils::listToCqlVector, result.multi)
+            map(EmbeddingService::listToCqlVector, result.multi)
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    private static CqlVector<Float> listToCqlVector(List<Float> list) {
+        return CqlVector.builder().addAll(list).build();
     }
 
     private record PassageEmbedRequest(List<String> texts) {}
     private record QueryEmbedRequest(String text) {}
 
-    private record PassageEmbedResponse(List<List<Double>> dense, List<List<List<Double>>> multi) {}
-    private record QueryEmbedResponse(List<Double> dense, List<List<Double>> multi) {}
+    private record PassageEmbedResponse(List<List<Float>> dense, List<List<List<Float>>> multi) {}
+    private record QueryEmbedResponse(List<Float> dense, List<List<Float>> multi) {}
 }

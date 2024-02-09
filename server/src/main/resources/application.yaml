@@ -1,8 +1,8 @@
 astra:
   api:
-    application-token: AstraCS:IAAFgcfxyOKLNeKbYrshlxMT:221f331224eb0e9fef75f1c95644a9ddf251d9904fc900091098a3b7b62ca615
-    database-id: 273da712-6791-4d6f-97a8-c1198f669817
-    database-region: us-east1
+    application-token: ${ASTRA_DEMO_TOKEN:AstraCS:IAAFgcfxyOKLNeKbYrshlxMT:221f331224eb0e9fef75f1c95644a9ddf251d9904fc900091098a3b7b62ca615}
+    database-id: ${ASTRA_DEMO_DB_ID:273da712-6791-4d6f-97a8-c1198f669817}
+    database-region: ${ASTRA_DEMO_DB_REGION:us-east1}
     cross-region-failback: off
     grpc:
       enabled: true
@@ -12,19 +12,19 @@ astra:
       enabled: true
     driver-config:
       basic:
-        session-keyspace: ${ASTRA_DEMO_KEYSPACE:demo}
+        session-keyspace: demo
 
 server:
   port: 8082
 
 astra-demo:
   embedding-service:
-    url: ${ASTRA_DEMO_EMBEDDING_SERVICE_URL:http://localhost:5000}
+    url: http://localhost:5000
     dims:
-      dense: ${ASTRA_DEMO_EMBEDDING_SERVICE_DIMS_DENSE:768}
-      multi: ${ASTRA_DEMO_EMBEDDING_SERVICE_DIMS_MULTI:128}
-  entry-ttl: ${ASTRA_DEMO_ENTITY_TTL:86400}
-  share-texts: ${ASTRA_DEMO_SHARE_TEXTS:false}
+      dense: 768
+      multi: 128
+  entry-ttl: 86400
+  share-texts: false
 
 spring:
   threads:

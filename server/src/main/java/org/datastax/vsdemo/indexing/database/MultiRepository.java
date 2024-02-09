@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @DependsOn("multiTableInitializer")
@@ -48,7 +49,7 @@ public class MultiRepository {
         """.formatted(keyspace, ttl));
 
         similarParts = session.prepare("""
-            SELECT text_id, text FROM %s.multi WHERE user_id = ? ORDER BY embedding ANN OF ? LIMIT ?;
+            SELECT text_id FROM %s.multi WHERE user_id = ? ORDER BY embedding ANN OF ? LIMIT ?;
         """.formatted(keyspace));
 
         byID = session.prepare("""
@@ -58,10 +59,10 @@ public class MultiRepository {
 
     public void saveAll(List<MultiEntity> entities) {
         entities.forEach(entity -> {
-            final var partID = new Object() { int ref = 0; };
+            var partID = new AtomicInteger();
 
             entity.embeddings().forEach(embedding -> {
-                var boundInsertion = insertSentence.bind(entity.userID(), entity.textID(), partID.ref++, embedding, entity.text(), entity.url());
+                var boundInsertion = insertSentence.bind(entity.userID(), entity.textID(), partID.getAndIncrement(), embedding, entity.text(), entity.url());
                 executor.submit(() -> session.execute(boundInsertion));
             });
         });

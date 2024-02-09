@@ -1,4 +1,4 @@
-from functools import reduce
+import itertools
 from typing import List
 
 from colbert.indexing.collection_encoder import CollectionEncoder
@@ -12,13 +12,9 @@ encoder = CollectionEncoder(cf, cp)
 def encode_passages(texts: List[str]) -> List[List[List[float]]]:
   embeddings_flat, counts = encoder.encode_passages(texts)
 
-  ranges = reduce(
-    lambda acc, x: acc + [(x[0], x[0] + x[1])],
-    zip([0] + counts, counts),
-    [],
-  )
+  start_indices = [0] + list(itertools.accumulate(counts[:-1]))
 
-  return [embeddings_flat[start:end].tolist() for start, end in ranges]
+  return [embeddings_flat[start:start + count].tolist() for start, count in zip(start_indices, counts)]
 
 def encode_query(text: str) -> List[List[float]]:
   return cp.queryFromText([text])[0].tolist()
