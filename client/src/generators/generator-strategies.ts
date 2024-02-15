@@ -3,6 +3,7 @@ import { QuickipediaGeneratorStrategy } from "./strategy-quickipedia.ts";
 import { LoremGeneratorStrategy } from "./strategy-lorem.ts";
 import { SETTINGS } from "../settings.ts";
 import { GeneratorOutput } from "./generator-pool.ts";
+import { CatpediaGeneratorStrategy } from './strategy-catpedia.ts';
 
 export interface ColumnTextGenerationStrategy {
   refreshBuffer(): Promise<GeneratorOutput[]>;
@@ -11,6 +12,7 @@ export interface ColumnTextGenerationStrategy {
 export const GENERATOR_STRATEGIES = {
   wikipedia: WikipediaGeneratorStrategy,
   quickipedia: QuickipediaGeneratorStrategy,
+  catpedia: CatpediaGeneratorStrategy,
   lorem: LoremGeneratorStrategy,
 };
 

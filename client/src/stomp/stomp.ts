@@ -19,7 +19,7 @@ export function setupStomp() {
   });
 
   socket.onclose = (e: CloseEvent) => {
-    console.log(e);
+    console.error(e);
     stopMainLoop();
     document.querySelector<HTMLDivElement>('.errored-page')!.classList.remove('hidden');
   }

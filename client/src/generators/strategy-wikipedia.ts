@@ -13,7 +13,7 @@ export class WikipediaGeneratorStrategy implements ColumnTextGenerationStrategy 
 
       return Object.values(body.query.pages);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return [];
     }
   }

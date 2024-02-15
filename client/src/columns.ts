@@ -22,9 +22,9 @@ declare module './settings.ts' {
 function setupSettings() {
   registerSetting('num-columns', 'NUM_COLUMNS', 2, ...numInRange(0, 8));
 
-  registerSetting('parse-speed', 'PARSE_SPEED', 50, ...numInRange(0, 250));
+  registerSetting('parse-speed', 'PARSE_SPEED', 100, ...numInRange(0, 250));
 
-  registerSetting('text-gen-fn', 'TEXT_GEN_FN', 'quickipedia', (value) => {
+  registerSetting('text-gen-fn', 'TEXT_GEN_FN', 'catpedia', (value) => {
     return (!isGeneratorStrategy(value))
       ? errored(`invalid generator (${Object.keys(GENERATOR_STRATEGIES)})`)
       : success(value);
